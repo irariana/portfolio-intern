@@ -18,7 +18,7 @@
 */
 
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Menu, X, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -60,9 +60,6 @@ export function Navigation() {
 
   // État pour savoir si on a scrollé (pour changer le style de la navbar)
   const [isScrolled, setIsScrolled] = useState(false);
-
-  // Récupère la route actuelle (pour l'admin)
-  const location = useLocation();
 
   // ------------------------------------------
   // EFFET POUR DÉTECTER LE SCROLL
