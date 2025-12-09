@@ -31,11 +31,11 @@ export default defineConfig(({ mode }) => ({
     },
   },
   // Middleware pour sauvegarder le contenu en mode développement
-  configureServer(server) {
-    server.middlewares.use("/api/save-content", async (req, res, next) => {
+  configureServer(server: any) {
+    server.middlewares.use("/api/save-content", async (req: any, res: any, next: any) => {
       if (req.method === "POST") {
         const chunks: Uint8Array[] = [];
-        req.on("data", (chunk) => chunks.push(chunk));
+        req.on("data", (chunk: any) => chunks.push(chunk));
         req.on("end", () => {
           const body = Buffer.concat(chunks).toString();
           const fs = require("fs");

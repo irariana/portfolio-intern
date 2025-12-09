@@ -162,10 +162,13 @@ export function getData(): PortfolioData {
  */
 export function saveData(data: PortfolioData): void {
   try {
-    // 1. Sauvegarde dans le localStorage (pour effet immédiat/cache)
+    // 1. Mise à jour des données en mémoire vive (pour affichage immédiat sans recharger)
+    Object.assign(defaultData, data);
+
+    // 2. Sauvegarde dans le localStorage (pour effet immédiat/cache)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-    // 2. Si on est en mode développement (localhost), on sauvegarde aussi dans le fichier JSON
+    // 3. Si on est en mode développement (localhost), on sauvegarde aussi dans le fichier JSON
     // Cela permet de "persister" les changements dans le code source pour pouvoir les commit
     if (import.meta.env.DEV) {
       fetch("/api/save-content", {
