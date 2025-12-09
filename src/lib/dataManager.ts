@@ -162,25 +162,35 @@ export function getData(): PortfolioData {
  */
 export function saveData(data: PortfolioData): void {
   try {
-    // 1. Mise à jour des données en mémoire vive (pour affichage immédiat sans recharger)
-    Object.assign(defaultData, data);
+    // 1. Mise à jour explicite des données en mémoire
+    // On remplace les références pour être sûr que l'application voit les changements
+    defaultData.profile = data.profile;
+    defaultData.skills = data.skills;
+    defaultData.projects = data.projects;
+    defaultData.articles = data.articles;
+    defaultData.messages = data.messages;
 
-    // 2. Sauvegarde dans le localStorage (pour effet immédiat/cache)
+    // 2. Sauvegarde dans le localStorage (cache immédiat)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 
-    // 3. Si on est en mode développement (localhost), on sauvegarde aussi dans le fichier JSON
-    // Cela permet de "persister" les changements dans le code source pour pouvoir les commit
+    // 3. Sauvegarde sur le disque (Serveur local) + Commit Git
     if (import.meta.env.DEV) {
+      console.log("💾 Tentative de sauvegarde sur le disque...");
       fetch("/api/save-content", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      }).catch((e) => console.error("Erreur save API:", e));
+      })
+        .then(res => {
+          if (res.ok) console.log("✅ Sauvegarde disque réussie !");
+          else console.error("❌ Erreur sauvegarde disque:", res.statusText);
+        })
+        .catch((e) => console.error("❌ Erreur connexion API sauvegarde:", e));
     }
   } catch (error) {
-    console.error("Erreur lors de la sauvegarde des données:", error);
+    console.error("Erreur critique sauvegarde:", error);
   }
 }
 
