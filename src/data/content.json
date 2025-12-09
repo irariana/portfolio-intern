@@ -78,21 +78,6 @@
   ],
   "projects": [
     {
-      "id": "project-2",
-      "title": "Prédiction Football",
-      "description": "Modèle de machine learning pour prédire les résultats de matchs de football en utilisant les statistiques historiques des équipes.",
-      "image": "",
-      "technologies": [
-        "Python",
-        "Scikit-learn",
-        "Pandas",
-        "Streamlit"
-      ],
-      "githubUrl": "https://github.com",
-      "demoUrl": "",
-      "featured": true
-    },
-    {
       "id": "project-3",
       "title": "Recommandation Animés",
       "description": "Système de recommandation d'animés basé sur le filtrage collaboratif. Analyse des préférences utilisateurs pour suggérer de nouveaux contenus.",
