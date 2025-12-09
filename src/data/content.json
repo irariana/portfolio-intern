@@ -76,23 +76,7 @@
       "icon": "pie-chart"
     }
   ],
-  "projects": [
-    {
-      "id": "project-4",
-      "title": "Dashboard Gaming Stats",
-      "description": "Dashboard interactif affichant les statistiques de jeu personnelles avec graphiques temps réel et analyses de performance.",
-      "image": "",
-      "technologies": [
-        "JavaScript",
-        "Chart.js",
-        "Node.js",
-        "Steam API"
-      ],
-      "githubUrl": "https://github.com",
-      "demoUrl": "",
-      "featured": false
-    }
-  ],
+  "projects": [],
   "articles": [
     {
       "id": "article-1",
