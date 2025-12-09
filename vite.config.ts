@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { exec } from "child_process";
 
 // https://vitejs.dev/config/
 // GITHUB PAGES : Change "/NOM-DU-REPO/" par le nom de ton repository
@@ -28,5 +29,53 @@ export default defineConfig(({ mode }) => ({
         manualChunks: undefined,
       },
     },
+  },
+  // Middleware pour sauvegarder le contenu en mode développement
+  configureServer(server) {
+    server.middlewares.use("/api/save-content", async (req, res, next) => {
+      if (req.method === "POST") {
+        const chunks: Uint8Array[] = [];
+        req.on("data", (chunk) => chunks.push(chunk));
+        req.on("end", () => {
+          const body = Buffer.concat(chunks).toString();
+          const fs = require("fs");
+          const filePath = path.resolve(__dirname, "./src/data/content.json");
+
+          try {
+            // Formatte le JSON pour qu'il soit lisible
+            const formattedJson = JSON.stringify(JSON.parse(body), null, 2);
+            fs.writeFileSync(filePath, formattedJson, "utf-8");
+
+            // AUTOMATISATION GIT : Commit & Push
+            console.log("Sauvegarde locale effectuée. Lancement du push GitHub...");
+            exec(
+              'git add src/data/content.json && git commit -m "auto: Mise à jour du contenu via Admin" && git push',
+              (error, stdout, stderr) => {
+                if (error) {
+                  // Si l'erreur est juste "rien à commiter", ce n'est pas grave
+                  if (stdout.includes("nothing to commit")) {
+                    console.log("Rien à commiter.");
+                    return;
+                  }
+                  console.error(`Erreur Git Auto-Push: ${error.message}`);
+                  return;
+                }
+                if (stderr) console.error(`Git Info: ${stderr}`);
+                console.log(`Git Auto-Push Succès: ${stdout}`);
+              }
+            );
+
+            res.statusCode = 200;
+            res.end("Saved & Pushed");
+          } catch (e) {
+            console.error(e);
+            res.statusCode = 500;
+            res.end("Error saving file");
+          }
+        });
+      } else {
+        next();
+      }
+    });
   },
 }));

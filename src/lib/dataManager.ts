@@ -111,182 +111,10 @@ export interface PortfolioData {
 // Ces données sont utilisées lors de la première visite
 // ou si les données sont corrompues/supprimées
 
-const defaultData: PortfolioData = {
-  // ------------------------------------------
-  // Profil par défaut
-  // ------------------------------------------
-  profile: {
-    name: "Alexandre Dupont",
-    title: "Étudiant BUT Science des Données",
-    bio: "Passionné par la Data Science, les jeux vidéo et les animés. Je cherche à appliquer l'analyse de données dans mes domaines de passion : e-sport, statistiques sportives et recommandation de contenus.",
-    avatar: "",
-    socials: {
-      github: "https://github.com",
-      linkedin: "https://linkedin.com",
-      email: "contact@example.com",
-    },
-  },
+// Données importées depuis le fichier JSON central
+import contentData from "@/data/content.json";
 
-  // ------------------------------------------
-  // Compétences par défaut
-  // ------------------------------------------
-  skills: [
-    // Langages de programmation
-    {
-      id: "skill-1",
-      name: "Python",
-      category: "Langages",
-      level: 80,
-      icon: "code",
-    },
-    {
-      id: "skill-2",
-      name: "HTML/CSS",
-      category: "Langages",
-      level: 75,
-      icon: "code",
-    },
-    {
-      id: "skill-3",
-      name: "JavaScript",
-      category: "Langages",
-      level: 65,
-      icon: "code",
-    },
-    {
-      id: "skill-4",
-      name: "SQL",
-      category: "Langages",
-      level: 70,
-      icon: "database",
-    },
-    // Data Science
-    {
-      id: "skill-5",
-      name: "Pandas",
-      category: "Data Science",
-      level: 85,
-      icon: "bar-chart",
-    },
-    {
-      id: "skill-6",
-      name: "NumPy",
-      category: "Data Science",
-      level: 75,
-      icon: "calculator",
-    },
-    {
-      id: "skill-7",
-      name: "Matplotlib",
-      category: "Data Science",
-      level: 80,
-      icon: "line-chart",
-    },
-    {
-      id: "skill-8",
-      name: "Scikit-learn",
-      category: "Data Science",
-      level: 60,
-      icon: "brain",
-    },
-    // Outils
-    {
-      id: "skill-9",
-      name: "Git & GitHub",
-      category: "Outils",
-      level: 70,
-      icon: "git-branch",
-    },
-    {
-      id: "skill-10",
-      name: "Visualisation",
-      category: "Data Science",
-      level: 75,
-      icon: "pie-chart",
-    },
-  ],
-
-  // ------------------------------------------
-  // Projets par défaut
-  // ------------------------------------------
-  projects: [
-    {
-      id: "project-1",
-      title: "Analyse E-Sport LoL",
-      description:
-        "Analyse statistique des performances des joueurs professionnels de League of Legends. Visualisation des KDA, winrates et méta-analyse des champions.",
-      image: "",
-      technologies: ["Python", "Pandas", "Matplotlib", "Riot API"],
-      githubUrl: "https://github.com",
-      demoUrl: "",
-      featured: true,
-    },
-    {
-      id: "project-2",
-      title: "Prédiction Football",
-      description:
-        "Modèle de machine learning pour prédire les résultats de matchs de football en utilisant les statistiques historiques des équipes.",
-      image: "",
-      technologies: ["Python", "Scikit-learn", "Pandas", "Streamlit"],
-      githubUrl: "https://github.com",
-      demoUrl: "",
-      featured: true,
-    },
-    {
-      id: "project-3",
-      title: "Recommandation Animés",
-      description:
-        "Système de recommandation d'animés basé sur le filtrage collaboratif. Analyse des préférences utilisateurs pour suggérer de nouveaux contenus.",
-      image: "",
-      technologies: ["Python", "Surprise", "Flask", "React"],
-      githubUrl: "https://github.com",
-      demoUrl: "",
-      featured: true,
-    },
-    {
-      id: "project-4",
-      title: "Dashboard Gaming Stats",
-      description:
-        "Dashboard interactif affichant les statistiques de jeu personnelles avec graphiques temps réel et analyses de performance.",
-      image: "",
-      technologies: ["JavaScript", "Chart.js", "Node.js", "Steam API"],
-      githubUrl: "https://github.com",
-      demoUrl: "",
-      featured: false,
-    },
-  ],
-
-  // ------------------------------------------
-  // Articles par défaut (blog)
-  // ------------------------------------------
-  articles: [
-    {
-      id: "article-1",
-      title: "Comment la Data Science révolutionne l'E-Sport",
-      excerpt:
-        "Découvrez comment les équipes professionnelles utilisent l'analyse de données pour optimiser leurs stratégies et performances.",
-      content:
-        "# Introduction\n\nL'e-sport moderne est de plus en plus data-driven...",
-      date: "2024-01-15",
-      published: true,
-      tags: ["Data Science", "E-Sport", "Gaming"],
-    },
-    {
-      id: "article-2",
-      title: "Créer un système de recommandation d'animés",
-      excerpt:
-        "Guide pratique pour construire votre propre système de recommandation en Python avec des algorithmes de filtrage collaboratif.",
-      content:
-        "# Prérequis\n\nPour ce tutoriel, vous aurez besoin de Python 3.8+...",
-      date: "2024-02-20",
-      published: true,
-      tags: ["Python", "Machine Learning", "Animés"],
-    },
-  ],
-
-  // Messages de contact (vide par défaut)
-  messages: [],
-};
+const defaultData: PortfolioData = contentData as PortfolioData;
 
 // ==========================================
 // CLÉ DE STOCKAGE LOCALSTORAGE
@@ -350,8 +178,20 @@ export function getData(): PortfolioData {
  */
 export function saveData(data: PortfolioData): void {
   try {
-    // JSON.stringify convertit un objet en chaîne JSON
+    // 1. Sauvegarde dans le localStorage (pour effet immédiat/cache)
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+
+    // 2. Si on est en mode développement (localhost), on sauvegarde aussi dans le fichier JSON
+    // Cela permet de "persister" les changements dans le code source pour pouvoir les commit
+    if (import.meta.env.DEV) {
+      fetch("/api/save-content", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }).catch((e) => console.error("Erreur save API:", e));
+    }
   } catch (error) {
     console.error("Erreur lors de la sauvegarde des données:", error);
   }
