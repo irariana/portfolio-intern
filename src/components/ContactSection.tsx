@@ -1,25 +1,19 @@
 /* ==========================================
-   COMPOSANT CONTACT SECTION
+   COMPOSANT CONTACT SECTION - STYLE RPG
    ==========================================
    
-   Formulaire de contact avec animation.
-   Les messages sont stockés dans localStorage
-   et visibles dans le panneau admin.
-   
-   Fonctionnalités :
-   - Formulaire avec validation
-   - Animation de succès après envoi
-   - Liens vers les réseaux sociaux
-   - Design glassmorphism
+   Formulaire de contact façon "Message au Héros"
+   Intégration EmailJS pour envoi direct par email.
 */
 
 import { useState, useEffect } from "react";
-import { Send, Mail, MapPin, Github, Linkedin, CheckCircle, Loader2 } from "lucide-react";
+import { Send, Mail, MapPin, Github, Linkedin, CheckCircle, Loader2, Scroll, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { addMessage, getProfile, type Profile } from "@/lib/dataManager";
+import { sendContactEmail, isEmailJSConfigured } from "@/lib/emailService";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -38,210 +32,178 @@ interface FormData {
 // ==========================================
 
 export function ContactSection() {
-  // ------------------------------------------
-  // ÉTATS
-  // ------------------------------------------
-
-  // Données du formulaire
+  // États
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     message: "",
   });
-
-  // État de chargement (pendant l'envoi)
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // État de succès (après envoi)
   const [isSuccess, setIsSuccess] = useState(false);
-
-  // Profil pour les liens sociaux
   const [profile, setProfile] = useState<Profile | null>(null);
-
-  // Hook pour les notifications toast
   const { toast } = useToast();
 
-  // ------------------------------------------
-  // EFFET : Charger le profil
-  // ------------------------------------------
-
+  // Charger le profil
   useEffect(() => {
     setProfile(getProfile());
   }, []);
 
-  // ------------------------------------------
-  // GESTION DES CHANGEMENTS DE CHAMP
-  // ------------------------------------------
-
-  /**
-   * Met à jour l'état du formulaire quand un champ change
-   * @param field - Nom du champ (name, email, message)
-   * @param value - Nouvelle valeur du champ
-   */
+  // Mise à jour des champs
   const handleChange = (field: keyof FormData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // ------------------------------------------
-  // SOUMISSION DU FORMULAIRE
-  // ------------------------------------------
-
+  // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
-    // Empêche le rechargement de la page
     e.preventDefault();
 
-    // Validation basique
+    // Validation
     if (!formData.name || !formData.email || !formData.message) {
       toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs.",
+        title: "⚠️ Quête incomplète !",
+        description: "Tous les champs du parchemin doivent être remplis.",
         variant: "destructive",
       });
       return;
     }
 
-    // Validation email simple
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast({
-        title: "Erreur",
-        description: "Veuillez entrer une adresse email valide.",
+        title: "⚠️ Adresse invalide",
+        description: "Le pigeon voyageur ne trouve pas cette adresse...",
         variant: "destructive",
       });
       return;
     }
 
-    // Début de l'envoi
     setIsSubmitting(true);
 
-    // Simule un délai réseau (pour l'animation)
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      // Sauvegarder dans localStorage (pour l'admin)
+      addMessage({
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+      });
 
-    // Sauvegarde le message dans localStorage
-    addMessage({
-      name: formData.name,
-      email: formData.email,
-      message: formData.message,
-    });
+      // Envoyer par email via EmailJS si configuré
+      if (isEmailJSConfigured()) {
+        const emailResult = await sendContactEmail({
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+        });
 
-    // Affiche le succès
-    setIsSubmitting(false);
-    setIsSuccess(true);
+        if (!emailResult.success) {
+          console.warn("EmailJS non envoyé:", emailResult.message);
+          // On continue quand même car le message est sauvegardé
+        }
+      }
 
-    // Notification de succès
-    toast({
-      title: "Message envoyé !",
-      description: "Merci pour votre message. Je vous répondrai rapidement.",
-    });
+      setIsSubmitting(false);
+      setIsSuccess(true);
 
-    // Réinitialise le formulaire après 3 secondes
-    setTimeout(() => {
-      setIsSuccess(false);
-      setFormData({ name: "", email: "", message: "" });
-    }, 3000);
+      toast({
+        title: "✨ Parchemin envoyé !",
+        description: "Votre message a été transmis au héros.",
+      });
+
+      // Reset après 3 secondes
+      setTimeout(() => {
+        setIsSuccess(false);
+        setFormData({ name: "", email: "", message: "" });
+      }, 3000);
+
+    } catch (error) {
+      setIsSubmitting(false);
+      toast({
+        title: "❌ Échec de la quête",
+        description: "Le pigeon s'est perdu en chemin. Réessayez !",
+        variant: "destructive",
+      });
+    }
   };
-
-  // ------------------------------------------
-  // RENDU JSX
-  // ------------------------------------------
 
   return (
     <section
       id="contact"
-      className={cn(
-        "py-20 md:py-32",
-        "relative",
-        "bg-gradient-to-b from-background to-muted/30"
-      )}
+      className="py-20 md:py-32 relative bg-gradient-to-b from-background to-muted/20"
     >
-      <div className="container mx-auto px-4">
-        {/* ========================================
-            EN-TÊTE DE SECTION
-            ======================================== */}
-        <div className="text-center mb-16">
-          {/* Badge */}
+      {/* Particules magiques */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
           <div
-            className={cn(
-              "inline-flex items-center gap-2",
-              "px-4 py-2 rounded-full",
-              "glass text-primary text-sm font-medium",
-              "mb-4"
-            )}
-          >
-            <Mail className="w-4 h-4" />
-            Contact
+            key={i}
+            className="absolute w-1 h-1 bg-accent/40 rounded-full animate-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 5}s`,
+              animationDuration: `${3 + Math.random() * 4}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="container mx-auto px-4 relative">
+        {/* En-tête RPG */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rpg-box text-accent font-pixel text-xs mb-4">
+            <Scroll className="w-4 h-4" />
+            BUREAU DE POSTE
+            <MessageSquare className="w-4 h-4" />
           </div>
 
-          {/* Titre */}
-          <h2 className="text-3xl md:text-4xl font-display font-bold gradient-text mb-4">
-            Travaillons ensemble
+          <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+            <span className="neon-text">Envoyer un Parchemin</span>
           </h2>
 
-          {/* Description */}
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Une idée de projet ? Une question ? N'hésitez pas à me contacter !
+          <p className="text-muted-foreground max-w-2xl mx-auto font-pixel text-xs leading-relaxed">
+            Une quête à proposer ? Une alliance à forger ? Envoyez votre message !
           </p>
         </div>
 
-        {/* ========================================
-            CONTENU (2 colonnes)
-            ======================================== */}
+        {/* Contenu en 2 colonnes */}
         <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          {/* ------------------------------------------
-              COLONNE GAUCHE : Infos de contact
-              ------------------------------------------ */}
-          <div className="space-y-8">
-            {/* Carte d'info avec email */}
-            <div
-              className={cn(
-                "p-6 rounded-xl glass",
-                "flex items-start gap-4"
-              )}
-            >
-              <div className="p-3 rounded-lg bg-primary/20">
+          
+          {/* Colonne gauche : Infos de contact */}
+          <div className="space-y-6">
+            {/* Carte Email */}
+            <div className="rpg-box p-6 flex items-start gap-4 group hover:border-primary/50 transition-colors">
+              <div className="p-3 rounded pixel-border bg-primary/20 group-hover:shadow-glow transition-shadow">
                 <Mail className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                <p className="text-muted-foreground">
+                <h3 className="font-pixel text-xs text-accent mb-1">PIGEON VOYAGEUR</h3>
+                <p className="text-muted-foreground text-sm">
                   {profile?.socials?.email || "contact@example.com"}
                 </p>
               </div>
             </div>
 
-            {/* Carte d'info avec localisation */}
-            <div
-              className={cn(
-                "p-6 rounded-xl glass",
-                "flex items-start gap-4"
-              )}
-            >
-              <div className="p-3 rounded-lg bg-secondary/20">
+            {/* Carte Localisation */}
+            <div className="rpg-box p-6 flex items-start gap-4 group hover:border-secondary/50 transition-colors">
+              <div className="p-3 rounded pixel-border bg-secondary/20 group-hover:shadow-glow-secondary transition-shadow">
                 <MapPin className="w-6 h-6 text-secondary" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground mb-1">
-                  Localisation
-                </h3>
-                <p className="text-muted-foreground">France</p>
+                <h3 className="font-pixel text-xs text-accent mb-1">ZONE DE SPAWN</h3>
+                <p className="text-muted-foreground text-sm">France 🇫🇷</p>
               </div>
             </div>
 
-            {/* Liens réseaux sociaux */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-foreground">Me retrouver</h3>
+            {/* Liens sociaux */}
+            <div className="rpg-box p-6">
+              <h3 className="font-pixel text-xs text-accent mb-4">GUILDES & RÉSEAUX</h3>
               <div className="flex gap-4">
-                {/* GitHub */}
                 {profile?.socials?.github && (
                   <a
                     href={profile.socials.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={cn(
-                      "p-3 rounded-lg glass",
+                      "p-3 rounded pixel-border bg-muted/50",
                       "text-muted-foreground hover:text-primary",
                       "transition-all duration-300",
                       "hover:scale-110 hover:shadow-glow"
@@ -251,15 +213,13 @@ export function ContactSection() {
                     <Github className="w-6 h-6" />
                   </a>
                 )}
-
-                {/* LinkedIn */}
                 {profile?.socials?.linkedin && (
                   <a
                     href={profile.socials.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={cn(
-                      "p-3 rounded-lg glass",
+                      "p-3 rounded pixel-border bg-muted/50",
                       "text-muted-foreground hover:text-primary",
                       "transition-all duration-300",
                       "hover:scale-110 hover:shadow-glow"
@@ -271,63 +231,82 @@ export function ContactSection() {
                 )}
               </div>
             </div>
+
+            {/* Note sur EmailJS */}
+            {!isEmailJSConfigured() && (
+              <div className="rpg-box p-4 border-accent/30">
+                <p className="font-pixel text-[10px] text-muted-foreground">
+                  💡 Pour recevoir les messages par email, configurez les secrets EmailJS dans les paramètres.
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* ------------------------------------------
-              COLONNE DROITE : Formulaire
-              ------------------------------------------ */}
-          <div className="p-8 rounded-xl glass">
+          {/* Colonne droite : Formulaire */}
+          <div className="rpg-box p-8">
             {isSuccess ? (
-              /* Affichage du succès */
+              /* Message de succès style RPG */
               <div className="h-full flex flex-col items-center justify-center text-center animate-scale-in">
-                <CheckCircle className="w-16 h-16 text-success mb-4" />
+                <div className="w-20 h-20 rounded-full bg-accent/20 flex items-center justify-center mb-4 animate-pulse">
+                  <CheckCircle className="w-10 h-10 text-accent" />
+                </div>
                 <h3 className="text-xl font-display font-bold text-foreground mb-2">
-                  Message envoyé !
+                  <span className="neon-text-gold">Quête accomplie !</span>
                 </h3>
-                <p className="text-muted-foreground">
-                  Je vous répondrai dès que possible.
+                <p className="text-muted-foreground font-pixel text-xs">
+                  +100 XP de communication
                 </p>
               </div>
             ) : (
               /* Formulaire */
               <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="font-pixel text-xs text-accent">RÉDIGER UN PARCHEMIN</h3>
+                </div>
+
                 {/* Champ Nom */}
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nom</Label>
+                  <Label htmlFor="name" className="font-pixel text-xs text-muted-foreground">
+                    NOM DU HÉROS
+                  </Label>
                   <Input
                     id="name"
                     type="text"
-                    placeholder="Votre nom"
+                    placeholder="Entrez votre nom..."
                     value={formData.name}
                     onChange={(e) => handleChange("name", e.target.value)}
-                    className="bg-background/50 border-border focus:border-primary"
+                    className="bg-background/50 border-border focus:border-primary font-mono"
                     required
                   />
                 </div>
 
                 {/* Champ Email */}
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="font-pixel text-xs text-muted-foreground">
+                    ADRESSE DU PIGEON
+                  </Label>
                   <Input
                     id="email"
                     type="email"
                     placeholder="votre@email.com"
                     value={formData.email}
                     onChange={(e) => handleChange("email", e.target.value)}
-                    className="bg-background/50 border-border focus:border-primary"
+                    className="bg-background/50 border-border focus:border-primary font-mono"
                     required
                   />
                 </div>
 
                 {/* Champ Message */}
                 <div className="space-y-2">
-                  <Label htmlFor="message">Message</Label>
+                  <Label htmlFor="message" className="font-pixel text-xs text-muted-foreground">
+                    CONTENU DU PARCHEMIN
+                  </Label>
                   <Textarea
                     id="message"
-                    placeholder="Votre message..."
+                    placeholder="Écrivez votre message..."
                     value={formData.message}
                     onChange={(e) => handleChange("message", e.target.value)}
-                    className="bg-background/50 border-border focus:border-primary min-h-[150px]"
+                    className="bg-background/50 border-border focus:border-primary min-h-[150px] font-mono"
                     required
                   />
                 </div>
@@ -338,21 +317,23 @@ export function ContactSection() {
                   size="lg"
                   className={cn(
                     "w-full",
-                    "gradient-primary text-primary-foreground",
-                    "font-semibold",
-                    "glow-hover"
+                    "bg-gradient-to-r from-primary to-accent",
+                    "text-background font-pixel text-xs",
+                    "pixel-border",
+                    "hover:shadow-glow hover:scale-[1.02]",
+                    "transition-all duration-300"
                   )}
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Envoi en cours...
+                      ENVOI EN COURS...
                     </>
                   ) : (
                     <>
                       <Send className="w-5 h-5 mr-2" />
-                      Envoyer le message
+                      ENVOYER LE PARCHEMIN
                     </>
                   )}
                 </Button>
