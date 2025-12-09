@@ -42,6 +42,7 @@ export interface Profile {
   bio: string;          // Biographie courte
   avatar: string;       // URL de la photo de profil
   socials: SocialLinks; // Liens réseaux sociaux
+  passwordHash?: string; // Hash du mot de passe admin
 }
 
 /**

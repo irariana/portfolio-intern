@@ -49,18 +49,20 @@ export default defineConfig(({ mode }) => ({
             // AUTOMATISATION GIT : Commit & Push
             console.log("Sauvegarde locale effectuée. Lancement du push GitHub...");
             exec(
-              'git add src/data/content.json && git commit -m "auto: Mise à jour du contenu via Admin" && git push',
+              'git add . && git commit -m "auto: Mise à jour du contenu via Admin" && git pull --rebase && git push',
               (error, stdout, stderr) => {
                 if (error) {
                   // Si l'erreur est juste "rien à commiter", ce n'est pas grave
-                  if (stdout.includes("nothing to commit")) {
+                  // Note: git commit retourne exit code 1 si rien à commiter
+                  if (stdout && stdout.includes("nothing to commit")) {
                     console.log("Rien à commiter.");
                     return;
                   }
                   console.error(`Erreur Git Auto-Push: ${error.message}`);
+                  console.error(`Stdout: ${stdout}`);
+                  console.error(`Stderr: ${stderr}`);
                   return;
                 }
-                if (stderr) console.error(`Git Info: ${stderr}`);
                 console.log(`Git Auto-Push Succès: ${stdout}`);
               }
             );

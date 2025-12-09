@@ -69,20 +69,23 @@ async function hashString(str: string): Promise<string> {
 // GESTION DU MOT DE PASSE
 // ==========================================
 
+import { getData, updateProfile } from "./dataManager";
+
 /**
  * Initialise le mot de passe admin si non existant
  * Cette fonction est appelée au chargement de l'app
  */
 export async function initializeAuth(): Promise<void> {
-  // Vérifie si un hash de mot de passe existe déjà
-  const existingHash = localStorage.getItem(PASSWORD_HASH_KEY);
+  // Vérifie si un hash de mot de passe existe déjà dans le profil
+  const existingHash = getData().profile.passwordHash;
 
   if (!existingHash) {
     // Première utilisation : hash et stocke le mot de passe par défaut
     const hash = await hashString(DEFAULT_PASSWORD);
-    localStorage.setItem(PASSWORD_HASH_KEY, hash);
+    // On sauvegarde ce nouveau mot de passe dans le fichier JSON via le dataManager
+    updateProfile({ passwordHash: hash });
     console.log(
-      "🔐 Mot de passe admin initialisé. Mot de passe par défaut: admin123"
+      "🔐 Mot de passe admin initialisé dans le profil. Mot de passe par défaut: admin123"
     );
   }
 }
@@ -103,9 +106,9 @@ export async function changePassword(
     return false;
   }
 
-  // 2. Hash et stocke le nouveau mot de passe
+  // 2. Hash et stocke le nouveau mot de passe dans le profil
   const newHash = await hashString(newPassword);
-  localStorage.setItem(PASSWORD_HASH_KEY, newHash);
+  updateProfile({ passwordHash: newHash });
 
   return true;
 }
@@ -116,8 +119,8 @@ export async function changePassword(
  * @returns {Promise<boolean>} - true si correct, false sinon
  */
 export async function verifyPassword(password: string): Promise<boolean> {
-  // Récupère le hash stocké
-  const storedHash = localStorage.getItem(PASSWORD_HASH_KEY);
+  // Récupère le hash stocké dans le profil (fichier JSON)
+  const storedHash = getData().profile.passwordHash;
 
   if (!storedHash) {
     // Aucun mot de passe défini, initialise avec la valeur par défaut
