@@ -2,32 +2,6 @@
 
 Portfolio personnel avec un design inspiré des jeux vidéo rétro.
 
-## 🚀 Déploiement sur GitHub Pages
-
-### Option 1 : Déploiement automatique (recommandé)
-
-1. **Connecter à GitHub** depuis Lovable (bouton GitHub en haut)
-2. **Créer le repository** sur ton compte GitHub
-3. Aller dans **Settings > Pages** de ton repo GitHub
-4. Source : sélectionner **GitHub Actions**
-5. C'est tout ! Le site se déploie automatiquement à chaque push.
-
-### Option 2 : Déploiement manuel
-
-```bash
-# Cloner le repo
-git clone https://github.com/TON-USERNAME/TON-REPO.git
-cd TON-REPO
-
-# Installer les dépendances
-npm install
-
-# Build pour production
-npm run build
-
-# Le dossier dist/ contient les fichiers à déployer
-```
-
 ## ⚙️ Configuration
 
 ### Base Path (si nécessaire)
@@ -49,11 +23,6 @@ Pour recevoir les messages du formulaire de contact par email :
    - `VITE_EMAILJS_TEMPLATE_ID`
    - `VITE_EMAILJS_PUBLIC_KEY`
 
-## 🔐 Panneau Admin
-
-- URL : `/admin`
-- Mot de passe par défaut : `admin`
-- **Change le mot de passe** dès la première connexion !
 
 ## 📁 Structure du projet
 
@@ -87,5 +56,3 @@ src/
 - EmailJS (optionnel)
 
 ---
-
-Créé avec ❤️ et Lovable
