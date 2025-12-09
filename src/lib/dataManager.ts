@@ -146,35 +146,13 @@ export function generateId(): string {
  * @returns {PortfolioData} - Toutes les données du portfolio
  */
 export function getData(): PortfolioData {
-  try {
-    // 1. Récupère les données du localStorage
-    const stored = localStorage.getItem(STORAGE_KEY);
+  // On privilégie désormais le fichier JSON (content.json) comme source de vérité
+  // Cela permet que ce qu'on voit sur le PC (qui édite le JSON) soit exactement
+  // ce qui sera déployé, sans interférence d'un vieux cache localStorage.
 
-    // 2. Si aucune donnée, retourne les données par défaut
-    if (!stored) {
-      // Sauvegarde les données par défaut pour la prochaine fois
-      saveData(defaultData);
-      return defaultData;
-    }
-
-    // 3. Parse le JSON en objet JavaScript
-    // JSON.parse convertit une chaîne JSON en objet
-    const parsed = JSON.parse(stored) as PortfolioData;
-
-    // 4. Fusionne avec les données par défaut pour éviter les champs manquants
-    // Cela assure la compatibilité si on ajoute de nouveaux champs
-    return {
-      profile: { ...defaultData.profile, ...parsed.profile },
-      skills: parsed.skills || defaultData.skills,
-      projects: parsed.projects || defaultData.projects,
-      articles: parsed.articles || defaultData.articles,
-      messages: parsed.messages || defaultData.messages,
-    };
-  } catch (error) {
-    // En cas d'erreur (JSON corrompu), log l'erreur et retourne les défauts
-    console.error("Erreur lors de la lecture des données:", error);
-    return defaultData;
-  }
+  // Si besoin de fusionner avec des brouillons locaux, on pourrait ajouter une logique ici,
+  // mais pour votre usage "Édition PC -> Vue Mobile", le JSON doit être prioritaire.
+  return defaultData;
 }
 
 /**
