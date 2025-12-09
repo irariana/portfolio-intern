@@ -62,13 +62,6 @@
       "icon": "line-chart"
     },
     {
-      "id": "skill-8",
-      "name": "Scikit-learn",
-      "category": "Data Science",
-      "level": 60,
-      "icon": "brain"
-    },
-    {
       "id": "skill-9",
       "name": "Git & GitHub",
       "category": "Outils",
