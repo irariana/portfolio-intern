@@ -120,7 +120,12 @@ const defaultData: PortfolioData = contentData as PortfolioData;
 // CLÉ DE STOCKAGE LOCALSTORAGE
 // ==========================================
 // Cette clé identifie nos données dans le localStorage
-const STORAGE_KEY = "portfolio_data";
+// ==========================================
+// CLÉ DE STOCKAGE LOCALSTORAGE
+// ==========================================
+// Cette clé identifie nos données dans le localStorage
+// Changement en v2 pour invalider l'ancien cache sur les téléphones
+const STORAGE_KEY = "portfolio_data_v2";
 
 // ==========================================
 // FONCTIONS UTILITAIRES
