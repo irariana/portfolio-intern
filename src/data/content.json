@@ -48,13 +48,6 @@
       "icon": "code"
     },
     {
-      "id": "skill-4",
-      "name": "Machine Learning",
-      "category": "Data Science",
-      "level": 65,
-      "icon": "brain"
-    },
-    {
       "id": "skill-5",
       "name": "Data Visualization",
       "category": "Data Science",
