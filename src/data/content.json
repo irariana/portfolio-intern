@@ -13,12 +13,6 @@
   },
   "timeline": [
     {
-      "id": "timeline-1",
-      "year": "2024",
-      "title": "BUT Science des Données - 2ème année",
-      "description": "Approfondissement en Machine Learning, statistiques avancées."
-    },
-    {
       "id": "timeline-2",
       "year": "2023",
       "title": "BUT Science des Données - 1ère année",
