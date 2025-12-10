@@ -62,7 +62,16 @@
       "icon": "git-branch"
     }
   ],
-  "projects": [],
+  "projects": [
+    {
+      "title": "Nouvelle quête",
+      "description": "",
+      "image": "",
+      "technologies": [],
+      "featured": false,
+      "id": "1765384402211-ps3eavc0x"
+    }
+  ],
   "articles": [],
   "messages": []
 }
