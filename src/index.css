@@ -228,7 +228,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: 0.05em;
-    image-rendering: pixelated;
+    /* image-rendering: pixelated; - désactivé pour les photos */
   }
 
   /* Scrollbar style arcade */

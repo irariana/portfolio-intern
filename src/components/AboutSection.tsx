@@ -59,12 +59,12 @@ export function AboutSection() {
               <div className="flex items-start gap-6">
                 {/* Avatar */}
                 <div className={cn(
-                  "w-32 h-32 flex-shrink-0",
+                  "w-32 h-32 flex-shrink-0 rounded-xl overflow-hidden",
                   "border-4 border-primary",
-                  "bg-card overflow-hidden"
+                  "bg-card"
                 )}>
                   {profile?.avatar ? (
-                    <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
+                    <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" style={{ imageRendering: 'auto' }} />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-muted">
                       <User className="w-16 h-16 text-muted-foreground" />
