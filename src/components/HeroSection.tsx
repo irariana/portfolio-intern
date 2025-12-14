@@ -129,9 +129,9 @@ export function HeroSection() {
       {/* Contenu principal */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
-          
+
           {/* Badge "Press Start" */}
-          <div 
+          <div
             className={cn(
               "inline-block mb-8 animate-arcade-blink",
               "font-display text-pixel-sm",
@@ -237,9 +237,13 @@ export function HeroSection() {
             )}
             style={{ animationDelay: "1.2s" }}
           >
-            Passionné par l'analyse de données, je cherche à appliquer la data
-            science dans mes domaines de passion : l'e-sport, les statistiques
-            sportives et les recommandations d'animés.
+            Bienvenue dans mon univers.
+
+            Un espace où les idées prennent forme, où la curiosité guide chaque projet et où la technologie devient un terrain d’exploration.
+            Ici, je partage mon parcours, mes créations et les expériences qui façonnent ma vision du numérique et de la data.
+
+            Chaque projet raconte une histoire : celle d’un apprentissage, d’un défi relevé, d’une envie d’aller plus loin.
+            Prenez le temps d’explorer, et si cet univers vous parle, discutons-en.
           </p>
 
           {/* Boutons CTA style RPG */}

@@ -166,7 +166,7 @@ export function ContactSection() {
 
         {/* Contenu en 2 colonnes */}
         <div className="grid lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-          
+
           {/* Colonne gauche : Infos de contact */}
           <div className="space-y-6">
             {/* Carte Email */}
@@ -232,14 +232,6 @@ export function ContactSection() {
               </div>
             </div>
 
-            {/* Note sur EmailJS */}
-            {!isEmailJSConfigured() && (
-              <div className="rpg-box p-4 border-accent/30">
-                <p className="font-pixel text-[10px] text-muted-foreground">
-                  💡 Pour recevoir les messages par email, configurez les secrets EmailJS dans les paramètres.
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Colonne droite : Formulaire */}

@@ -274,8 +274,7 @@ export function ProjectsSection() {
 
           {/* Description */}
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Découvrez mes projets alliant Data Science et mes passions :
-            gaming, sports et animés.
+            Découvrez mes projets alliant Data Science et mes passions
           </p>
         </div>
 
@@ -326,7 +325,7 @@ export function ProjectsSection() {
           <div className="text-center py-12">
             <FolderGit2 className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
             <p className="text-muted-foreground">
-              Aucun projet pour le moment. Ajoutez-en via le panneau admin !
+              Aucun projet pour le moment.
             </p>
           </div>
         )}
